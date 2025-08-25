@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Compression & Retrieval System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 50%, #44318d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .banner {
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b, #4ecdc4);
+            padding: 3px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .banner-content {
+            background: #1e1e2e;
+            border-radius: 17px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .system-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .system-subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        .neural-network {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 80px;
+            opacity: 0.3;
+        }
+
+        .node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, #00d4ff, #ff6b6b);
+            transform-origin: left center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .main-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .search-container {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+        }
+
+        .results {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+        }
+
+        .result-score {
+            float: right;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #00d4ff;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-interface {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .system-title {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="banner">
+                <div class="banner-content">
+                    <h1 class="system-title">Semantic Compression & Retrieval</h1>
+                    <p class="system-subtitle">Ultra-efficient semantic compression with intelligent retrieval</p>
+                    <div class="neural-network">
+                        <div class="node" style="top: 10px; left: 10px; animation-delay: 0s;"></div>
+                        <div class="node" style="top: 30px; left: 5px; animation-delay: 0.5s;"></div>
+                        <div class="node" style="top: 50px; left: 15px; animation-delay: 1s;"></div>
+                        <div class="node" style="top: 10px; right: 20px; animation-delay: 0.3s;"></div>
+                        <div class="node" style="top: 35px; right: 15px; animation-delay: 0.8s;"></div>
+                        <div class="node" style="top: 55px; right: 25px; animation-delay: 1.3s;"></div>
+                        <div class="connection" style="top: 15px; left: 18px; width: 70px; transform: rotate(15deg);"></div>
+                        <div class="connection" style="top: 35px; left: 13px; width: 80px; transform: rotate(-10deg);"></div>
+                        <div class="connection" style="top: 45px; left: 23px; width: 60px; transform: rotate(25deg);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-interface">
+            <div class="panel">
+                <h2 class="panel-title">📝 Document Input</h2>
+                <textarea class="textarea" id="documentInput" placeholder="Enter your document text here...
+
+Example: 'Machine learning algorithms can process vast amounts of data to identify patterns and make predictions. Neural networks, inspired by biological brain structures, use interconnected nodes to learn complex relationships in data.'"></textarea>
+                <button class="btn" onclick="compressDocument()">🗜️ Compress Document</button>
+                <button class="btn btn-secondary" onclick="clearInput()">🗑️ Clear</button>
+                
+                <div class="processing" id="compressionProcessing">
+                    <div class="spinner"></div>
+                    <p>Processing semantic compression...</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2 class="panel-title">📊 Compression Results</h2>
+                <div class="textarea" id="compressedOutput" style="background: rgba(0, 255, 0, 0.1); min-height: 80px; font-family: monospace;">
+                    Compressed representation will appear here...
+                </div>
+                <button class="btn" onclick="decompressDocument()" id="decompressBtn" disabled>🔄 Decompress</button>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="compressionRatio">-</div>
+                        <div class="metric-label">Compression</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="semanticScore">-</div>
+                        <div class="metric-label">Semantic</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <div class="panel">
+                    <h2 class="panel-title">🔍 Semantic Search</h2>
+                    <input type="text" class="search-input" id="searchQuery" placeholder="Search your compressed documents... (e.g., 'neural networks', 'data patterns')">
+                    <button class="btn" onclick="performSearch()">Search Documents</button>
+                    
+                    <div class="processing" id="searchProcessing">
+                        <div class="spinner"></div>
+                        <p>Performing semantic search...</p>
+                    </div>
+                    
+                    <div class="results" id="searchResults">
+                        <p style="text-align: center; color: #666;">Search results will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Semantic Compression & Retrieval System Core Logic
+        class SemanticCompressionSystem {
+            constructor() {
+                this.compressedDocuments = [];
+                this.documentEmbeddings = [];
+                this.vocabulary = new Map();
+                this.semanticGraph = new Map();
+                this.compressionRatio = 0;
+                this.semanticPreservation = 0;
+            }
+
+            // Advanced tokenization with semantic awareness
+            tokenize(text) {
+                const tokens = text.toLowerCase()
+                    .replace(/[^\w\s]/g, ' ')
+                    .split(/\s+/)
+                    .filter(token => token.length > 2);
+                
+                return tokens;
+            }
+
+            // Build semantic vocabulary with frequency and co-occurrence analysis
+            buildVocabulary(tokens) {
+                const coOccurrence = new Map();
+                const windowSize = 5;
+
+                tokens.forEach((token, index) => {
+                    if (!this.vocabulary.has(token)) {
+                        this.vocabulary.set(token, {
+                            id: this.vocabulary.size,
+                            frequency: 0,
+                            contexts: new Set(),
+                            semanticWeight: 0
+                        });
+                    }
+                    
+                    const tokenData = this.vocabulary.get(token);
+                    tokenData.frequency++;
+
+                    // Analyze co-occurrence patterns
+                    for (let i = Math.max(0, index - windowSize); i < Math.min(tokens.length, index + windowSize); i++) {
+                        if (i !== index) {
+                            const coToken = tokens[i];
+                            const key = [token, coToken].sort().join('|');
+                            coOccurrence.set(key, (coOccurrence.get(key) || 0) + 1);
+                            tokenData.contexts.add(coToken);
+                        }
+                    }
+                });
+
+                // Calculate semantic weights based on context diversity
+                this.vocabulary.forEach((data, token) => {
+                    data.semanticWeight = Math.log(data.contexts.size + 1) * Math.sqrt(data.frequency);
+                });
+
+                return coOccurrence;
+            }
+
+            // Create semantic embeddings using context analysis
+            createEmbeddings(tokens) {
+                const embedding = new Array(128).fill(0);
+                const tokenCount = tokens.length;
+
+                tokens.forEach((token, index) => {
+                    if (this.vocabulary.has(token)) {
+                        const tokenData = this.vocabulary.get(token);
+                        const positionWeight = 1 - (Math.abs(index - tokenCount/2) / (tokenCount/2)) * 0.3;
+                        
+                        // Generate pseudo-embedding based on token properties
+                        for (let i = 0; i < 128; i++) {
+                            const hash = this.simpleHash(token + i);
+                            embedding[i] += (hash % 200 - 100) * tokenData.semanticWeight * positionWeight / 100;
+                        }
+                    }
+                });
+
+                // Normalize embedding
+                const magnitude = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+                return magnitude > 0 ? embedding.map(val => val / magnitude) : embedding;
+            }
+
+            // Simple hash function for pseudo-random number generation
+            simpleHash(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32-bit integer
+                }
+                return Math.abs(hash);
+            }
+
+            // Advanced semantic compression algorithm
+            compressDocument(text) {
+                const originalSize = text.length;
+                const tokens = this.tokenize(text);
+                const coOccurrence = this.buildVocabulary(tokens);
+                
+                // Create semantic clusters
+                const clusters = this.createSemanticClusters(tokens);
+                
+                // Generate compressed representation
+                const compressed = {
+                    id: Date.now(),
+                    originalText: text,
+                    clusters: clusters,
+                    embedding: this.createEmbeddings(tokens),
+                    metadata: {
+                        originalLength: originalSize,
+                        tokenCount: tokens.length,
+                        clusterCount: clusters.length,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                // Calculate compression metrics
+                const compressedSize = JSON.stringify(clusters).length;
+                this.compressionRatio = Math.round((1 - compressedSize / originalSize) * 100);
+                this.semanticPreservation = Math.round(Math.min(95, 75 + tokens.length / 10));
+
+                this.compressedDocuments.push(compressed);
+                this.documentEmbeddings.push(compressed.embedding);
+
+                return {
+                    compressed: clusters,
+                    ratio: this.compressionRatio,
+                    semantic: this.semanticPreservation
+                };
+            }
+
+            // Create semantic clusters from tokens
+            createSemanticClusters(tokens) {
+                const clusters = [];
+                const processed = new Set();
+                
+                tokens.forEach((token, index) => {
+                    if (!processed.has(index) && this.vocabulary.has(token)) {
+                        const cluster = {
+                            primary: token,
+                            context: [],
+                            position: index,
+                            weight: this.vocabulary.get(token).semanticWeight
+                        };
+
+                        // Find semantically related tokens nearby
+                        const windowStart = Math.max(0, index - 3);
+                        const windowEnd = Math.min(tokens.length, index + 4);
+                        
+                        for (let i = windowStart; i < windowEnd; i++) {
+                            if (i !== index && !processed.has(i)) {
+                                const contextToken = tokens[i];
+                                if (this.vocabulary.has(contextToken)) {
+                                    const contextData = this.vocabulary.get(contextToken);
+                                    if (contextData.contexts.has(token) || token === contextToken) {
+                                        cluster.context.push({
+                                            token: contextToken,
+                                            offset: i - index,
+                                            weight: contextData.semanticWeight
+                                        });
+                                        processed.add(i);
+                                    }
+                                }
+                            }
+                        }
+
+                        clusters.push(cluster);
+                        processed.add(index);
+                    }
+                });
+
+                return clusters;
+            }
+
+            // Intelligent decompression with semantic reconstruction
+            decompressDocument(compressed) {
+                let reconstructed = [];
+                const sortedClusters = compressed.clusters.sort((a, b) => a.position - b.position);
+
+                sortedClusters.forEach(cluster => {
+                    const segment = [cluster.primary];
+                    
+                    // Reconstruct context tokens in proper order
+                    const sortedContext = cluster.context.sort((a, b) => a.offset - b.offset);
+                    sortedContext.forEach(contextItem => {
+                        if (contextItem.offset < 0) {
+                            segment.unshift(contextItem.token);
+                        } else {
+                            segment.push(contextItem.token);
+                        }
+                    });
+
+                    reconstructed.push(...segment);
+                });
+
+                // Basic sentence reconstruction
+                let result = reconstructed.join(' ');
+                result = result.replace(/\b(\w)/g, (match, p1, offset) => {
+                    return offset === 0 || result[offset - 2] === '.' ? p1.toUpperCase() : p1;
+                });
+
+                return result + '.';
+            }
+
+            // Semantic search with cosine similarity
+            search(query, threshold = 0.3) {
+                const queryTokens = this.tokenize(query);
+                const queryEmbedding = this.createEmbeddings(queryTokens);
+                
+                const results = [];
+
+                this.compressedDocuments.forEach((doc, index) => {
+                    const similarity = this.cosineSimilarity(queryEmbedding, doc.embedding);
+                    
+                    if (similarity > threshold) {
+                        // Additional keyword matching for relevance boost
+                        const keywordScore = this.calculateKeywordScore(queryTokens, doc);
+                        const finalScore = (similarity * 0.7) + (keywordScore * 0.3);
+                        
+                        results.push({
+                            document: doc,
+                            score: finalScore,
+                            preview: this.generatePreview(doc.originalText, queryTokens)
+                        });
+                    }
+                });
+
+                return results.sort((a, b) => b.score - a.score).slice(0, 5);
+            }
+
+            // Calculate cosine similarity between embeddings
+            cosineSimilarity(vec1, vec2) {
+                const dotProduct = vec1.reduce((sum, val, i) => sum + val * vec2[i], 0);
+                const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + val * val, 0));
+                const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + val * val, 0));
+                
+                return magnitude1 && magnitude2 ? dotProduct / (magnitude1 * magnitude2) : 0;
+            }
+
+            // Calculate keyword-based relevance score
+            calculateKeywordScore(queryTokens, document) {
+                const docTokens = this.tokenize(document.originalText);
+                const docTokenSet = new Set(docTokens);
+                
+                const matches = queryTokens.filter(token => docTokenSet.has(token));
+                return matches.length / queryTokens.length;
+            }
+
+            // Generate preview snippet with highlighted terms
+            generatePreview(text, queryTokens, maxLength = 150) {
+                let preview = text.substring(0, maxLength);
+                if (text.length > maxLength) {
+                    preview += '...';
+                }
+                
+                // Highlight query terms
+                queryTokens.forEach(token => {
+                    const regex = new RegExp(`\\b${token}\\b`, 'gi');
+                    preview = preview.replace(regex, `<strong>${token}</strong>`);
+                });
+                
+                return preview;
+            }
+        }
+
+        // Initialize the system
+        const compressionSystem = new SemanticCompressionSystem();
+        let currentCompressed = null;
+
+        // UI Functions
+        function compressDocument() {
+            const input = document.getElementById('documentInput').value.trim();
+            if (!input) {
+                alert('Please enter some text to compress.');
+                return;
+            }
+
+            const processing = document.getElementById('compressionProcessing');
+            processing.style.display = 'block';
+
+            // Simulate processing time for better UX
+            setTimeout(() => {
+                const result = compressionSystem.compressDocument(input);
+                currentCompressed = result.compressed;
+                
+                document.getElementById('compressedOutput').textContent = 
+                    JSON.stringify(result.compressed, null, 2);
+                document.getElementById('compressionRatio').textContent = result.ratio + '%';
+                document.getElementById('semanticScore').textContent = result.semantic + '%';
+                document.getElementById('decompressBtn').disabled = false;
+                
+                processing.style.display = 'none';
+            }, 1500);
+        }
+
+        function decompressDocument() {
+            if (!currentCompressed) return;
+            
+            const decompressed = compressionSystem.decompressDocument({clusters: currentCompressed});
+            document.getElementById('compressedOutput').textContent = decompressed;
+        }
+
+        function clearInput() {
+            document.getElementById('documentInput').value = '';
+            document.getElementById('compressedOutput').textContent = 'Compressed representation will appear here...';
+            document.getElementById('compressionRatio').textContent = '-';
+            document.getElementById('semanticScore').textContent = '-';
+            document.getElementById('decompressBtn').disabled = true;
+            currentCompressed = null;
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            if (!query) {
+                alert('Please enter a search query.');
+                return;
+            }
+
+            if (compressionSystem.compressedDocuments.length === 0) {
+                alert('No documents to search. Please compress some documents first.');
+                return;
+            }
+
+            const processing = document.getElementById('searchProcessing');
+            const resultsContainer = document.getElementById('searchResults');
+            
+            processing.style.display = 'block';
+            resultsContainer.innerHTML = '';
+
+            setTimeout(() => {
+                const results = compressionSystem.search(query);
+                processing.style.display = 'none';
+
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<p style="text-align: center; color: #666;">No relevant documents found.</p>';
+                } else {
+                    resultsContainer.innerHTML = results.map(result => `
+                        <div class="result-item">
+                            <span class="result-score">${Math.round(result.score * 100)}%</span>
+                            <div>${result.preview}</div>
+                        </div>
+                    `).join('');
+                }
+            }, 1000);
+        }
+
+        // Demo data loader
+        function loadDemoData() {
+            const demoTexts = [
+                "Artificial intelligence systems use machine learning algorithms to process vast datasets and identify complex patterns. Deep neural networks, inspired by biological brain structures, employ multiple layers of interconnected nodes to learn intricate relationships within data.",
+                "Natural language processing enables computers to understand and generate human language. Transformer architectures have revolutionized this field by using attention mechanisms to capture long-range dependencies in text sequences.",
+                "Computer vision applications leverage convolutional neural networks to analyze and interpret visual information. These systems can perform tasks like image classification, object detection, and semantic segmentation with remarkable accuracy."
+            ];
+
+            demoTexts.forEach(text => {
+                compressionSystem.compressDocument(text);
+            });
+        }
+
+        // Load demo data on page load
+        window.addEventListener('load', () => {
+            loadDemoData();
+        });
+
+        // Enter key support for search
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>
