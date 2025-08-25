@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Semantic-Compression-Retrieval-System-Banner.png" alt="Semantic Compression Retrieval System Banner" width="100%" />
+  <img src="images/Semantic-Compression-Retrieval-System-Banner.png" alt="Semantic Compression Retrieval System Banner" width="100%" />
 </p>
 
 > **Ultra-efficient semantic compression that maintains meaning while achieving dramatic size reduction, with intelligent retrieval that understands intent rather than keywords.**
